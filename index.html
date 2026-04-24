@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mehul — Web Developer & Business Solutions Architect</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet" />
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            display: ['Syne', 'sans-serif'],
+            body: ['DM Sans', 'sans-serif'],
+          },
+          colors: {
+            ink: '#0B0C10',
+            surface: '#111318',
+            card: '#161921',
+            border: '#1E2330',
+            muted: '#4B5264',
+            subtle: '#8892A4',
+            text: '#C9D1E0',
+            bright: '#E8EDF5',
+            accent: '#00E5FF',
+            emerald: '#00F5A0',
+            rose: '#FF4D6D',
+          },
+          animation: {
+            'fade-up': 'fadeUp 0.7s ease forwards',
+            'fade-in': 'fadeIn 0.6s ease forwards',
+            'line-grow': 'lineGrow 1.2s ease forwards',
+            'float': 'float 6s ease-in-out infinite',
+            'pulse-slow': 'pulseSlow 4s ease-in-out infinite',
+          },
+          keyframes: {
+            fadeUp: {
+              '0%': { opacity: '0', transform: 'translateY(32px)' },
+              '100%': { opacity: '1', transform: 'translateY(0)' },
+            },
+            fadeIn: {
+              '0%': { opacity: '0' },
+              '100%': { opacity: '1' },
+            },
+            lineGrow: {
+              '0%': { width: '0%' },
+              '100%': { width: '100%' },
+            },
+            float: {
+              '0%, 100%': { transform: 'translateY(0px)' },
+              '50%': { transform: 'translateY(-14px)' },
+            },
+            pulseSlow: {
+              '0%, 100%': { opacity: '0.4' },
+              '50%': { opacity: '0.8' },
+            },
+          },
+        },
+      },
+    };
+  </script>
+
+  <style>
+    * { box-sizing: border-box; }
+    html { background: #0B0C10; }
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: #0B0C10;
+      color: #C9D1E0;
+      overflow-x: hidden;
+    }
+
+    /* ── Noise grain overlay ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 9999;
+      opacity: 0.35;
+    }
+
+    /* ── Ambient glow blobs ── */
+    .glow-blob {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(120px);
+      pointer-events: none;
+    }
+
+    /* ── Reveal animation states ── */
+    .reveal { opacity: 0; transform: translateY(36px); transition: opacity 0.75s ease, transform 0.75s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+    .reveal-delay-1 { transition-delay: 0.1s; }
+    .reveal-delay-2 { transition-delay: 0.2s; }
+    .reveal-delay-3 { transition-delay: 0.3s; }
+    .reveal-delay-4 { transition-delay: 0.4s; }
+    .reveal-delay-5 { transition-delay: 0.5s; }
+
+    /* ── Gradient text ── */
+    .gradient-text {
+      background: linear-gradient(135deg, #00E5FF 0%, #00F5A0 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* ── Accent underline on hover ── */
+    .hover-line {
+      position: relative;
+      display: inline-block;
+    }
+    .hover-line::after {
+      content: '';
+      position: absolute;
+      left: 0; bottom: -2px;
+      width: 0; height: 1.5px;
+      background: linear-gradient(90deg, #00E5FF, #00F5A0);
+      transition: width 0.35s ease;
+    }
+    .hover-line:hover::after { width: 100%; }
+
+    /* ── Nav pill ── */
+    nav { backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }
+
+    /* ── Card glass effect ── */
+    .glass-card {
+      background: linear-gradient(135deg, rgba(22,25,33,0.9) 0%, rgba(14,16,22,0.9) 100%);
+      border: 1px solid rgba(255,255,255,0.07);
+      backdrop-filter: blur(12px);
+      transition: transform 0.35s ease, border-color 0.35s ease, box-shadow 0.35s ease;
+    }
+    .glass-card:hover {
+      transform: translateY(-6px);
+      border-color: rgba(0,229,255,0.25);
+      box-shadow: 0 24px 60px rgba(0,229,255,0.08), 0 0 0 1px rgba(0,229,255,0.1);
+    }
+
+    /* ── Skill badge ── */
+    .skill-badge {
+      background: rgba(0,229,255,0.06);
+      border: 1px solid rgba(0,229,255,0.15);
+      transition: background 0.3s, border-color 0.3s;
+    }
+    .skill-badge:hover {
+      background: rgba(0,229,255,0.12);
+      border-color: rgba(0,229,255,0.35);
+    }
+
+    /* ── Project tag ── */
+    .tech-tag {
+      background: rgba(0,245,160,0.07);
+      border: 1px solid rgba(0,245,160,0.18);
+      color: #00F5A0;
+    }
+
+    /* ── CTA primary button ── */
+    .btn-primary {
+      background: linear-gradient(135deg, #00E5FF, #00C8E0);
+      color: #0B0C10;
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      transition: transform 0.25s ease, box-shadow 0.25s ease, opacity 0.25s ease;
+    }
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 40px rgba(0,229,255,0.4);
+      opacity: 0.95;
+    }
+
+    /* ── CTA ghost button ── */
+    .btn-ghost {
+      border: 1.5px solid rgba(200,209,224,0.25);
+      color: #C9D1E0;
+      font-family: 'Syne', sans-serif;
+      font-weight: 600;
+      transition: border-color 0.25s ease, color 0.25s ease, transform 0.25s ease;
+    }
+    .btn-ghost:hover {
+      border-color: #00E5FF;
+      color: #00E5FF;
+      transform: translateY(-2px);
+    }
+
+    /* ── Progress bar ── */
+    .skill-bar-fill {
+      background: linear-gradient(90deg, #00E5FF, #00F5A0);
+      border-radius: 99px;
+      width: 0%;
+      transition: width 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* ── Social icon ── */
+    .social-icon {
+      border: 1px solid rgba(255,255,255,0.1);
+      transition: border-color 0.3s, background 0.3s, transform 0.3s;
+    }
+    .social-icon:hover {
+      border-color: #00E5FF;
+      background: rgba(0,229,255,0.1);
+      transform: translateY(-3px);
+    }
+
+    /* ── Scrollbar ── */
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: #0B0C10; }
+    ::-webkit-scrollbar-thumb { background: #1E2330; border-radius: 99px; }
+
+    /* ── Mobile menu ── */
+    #mobile-menu { transition: max-height 0.4s ease, opacity 0.4s ease; }
+    #mobile-menu.hidden { max-height: 0; opacity: 0; overflow: hidden; }
+    #mobile-menu.open { max-height: 400px; opacity: 1; }
+
+    /* ── Hero number counter ── */
+    .counter-num { font-variant-numeric: tabular-nums; }
+
+    /* ── Dot grid background ── */
+    .dot-grid {
+      background-image: radial-gradient(rgba(0,229,255,0.12) 1px, transparent 1px);
+      background-size: 36px 36px;
+    }
+
+    /* ── Section line ── */
+    .section-line {
+      width: 48px; height: 2px;
+      background: linear-gradient(90deg, #00E5FF, #00F5A0);
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ═══════════════════════════════════════
+       NAV
+  ════════════════════════════════════════ -->
+  <nav class="fixed top-0 left-0 right-0 z-50 bg-ink/80 border-b border-border">
+    <div class="max-w-6xl mx-auto px-5 sm:px-8 flex items-center justify-between h-16">
+
+      <!-- Logo -->
+      <a href="#" class="font-display font-800 text-xl tracking-tight">
+        <span class="text-bright">M</span><span class="gradient-text">ehul</span>
+      </a>
+
+      <!-- Desktop nav -->
+      <div class="hidden md:flex items-center gap-8">
+        <a href="#about" class="text-subtle text-sm hover-line hover:text-bright transition-colors duration-200">About</a>
+        <a href="#projects" class="text-subtle text-sm hover-line hover:text-bright transition-colors duration-200">Work</a>
+        <a href="#contact" class="text-subtle text-sm hover-line hover:text-bright transition-colors duration-200">Contact</a>
+        <a href="mailto:hello@mehul.dev" class="btn-primary text-sm px-5 py-2 rounded-full">Hire Me →</a>
+      </div>
+
+      <!-- Mobile hamburger -->
+      <button id="menu-toggle" class="md:hidden flex flex-col gap-1.5 p-1" aria-label="Toggle menu">
+        <span class="w-6 h-0.5 bg-subtle transition-all duration-300" id="bar1"></span>
+        <span class="w-6 h-0.5 bg-subtle transition-all duration-300" id="bar2"></span>
+        <span class="w-4 h-0.5 bg-subtle transition-all duration-300" id="bar3"></span>
+      </button>
+    </div>
+
+    <!-- Mobile dropdown -->
+    <div id="mobile-menu" class="hidden md:hidden border-t border-border bg-surface/95 backdrop-blur-xl">
+      <div class="max-w-6xl mx-auto px-5 py-6 flex flex-col gap-4">
+        <a href="#about" class="text-subtle hover:text-bright text-base py-1 transition-colors" onclick="closeMobile()">About</a>
+        <a href="#projects" class="text-subtle hover:text-bright text-base py-1 transition-colors" onclick="closeMobile()">Work</a>
+        <a href="#contact" class="text-subtle hover:text-bright text-base py-1 transition-colors" onclick="closeMobile()">Contact</a>
+        <a href="mailto:hello@mehul.dev" class="btn-primary text-sm px-5 py-2.5 rounded-full text-center mt-2" onclick="closeMobile()">Hire Me →</a>
+      </div>
+    </div>
+  </nav>
+
+
+  <!-- ═══════════════════════════════════════
+       HERO
+  ════════════════════════════════════════ -->
+  <section id="hero" class="relative min-h-screen flex items-center overflow-hidden pt-16">
+
+    <!-- Ambient blobs -->
+    <div class="glow-blob w-[600px] h-[600px] bg-accent/8 top-[-150px] right-[-200px] animate-pulse-slow"></div>
+    <div class="glow-blob w-[400px] h-[400px] bg-emerald/6 bottom-[-100px] left-[-150px] animate-pulse-slow" style="animation-delay:2s;"></div>
+
+    <!-- Dot grid -->
+    <div class="absolute inset-0 dot-grid opacity-30"></div>
+
+    <div class="relative z-10 max-w-6xl mx-auto px-5 sm:px-8 py-20 sm:py-28 grid lg:grid-cols-2 gap-16 items-center">
+
+      <!-- Left: Text -->
+      <div>
+        <!-- Eyebrow -->
+        <div class="animate-fade-up opacity-0" style="animation-delay:0.1s; animation-fill-mode:forwards;">
+          <span class="inline-flex items-center gap-2 text-xs font-display font-600 tracking-widest uppercase text-accent/80 mb-6">
+            <span class="w-6 h-px bg-accent/60"></span>
+            Full-Stack Developer · Business Architect
+          </span>
+        </div>
+
+        <!-- Headline -->
+        <h1 class="font-display font-800 text-4xl sm:text-5xl lg:text-6xl leading-[1.08] tracking-tight text-bright mb-6 animate-fade-up opacity-0" style="animation-delay:0.2s; animation-fill-mode:forwards;">
+          Building smart,<br />
+          <span class="gradient-text">scalable</span> web<br />
+          applications.
+        </h1>
+
+        <!-- Sub-headline -->
+        <p class="text-subtle text-base sm:text-lg leading-relaxed max-w-lg mb-10 animate-fade-up opacity-0" style="animation-delay:0.35s; animation-fill-mode:forwards;">
+          Leveraging a background in operations and HR management to develop custom software that <em class="text-text not-italic">actually solves business problems</em> — not just checks a technical box.
+        </p>
+
+        <!-- CTAs -->
+        <div class="flex flex-wrap gap-3 animate-fade-up opacity-0" style="animation-delay:0.5s; animation-fill-mode:forwards;">
+          <a href="#projects" class="btn-primary px-7 py-3.5 rounded-full text-sm inline-block">View My Work ↓</a>
+          <a href="mailto:hello@mehul.dev" class="btn-ghost px-7 py-3.5 rounded-full text-sm inline-block">Hire Me</a>
+        </div>
+
+        <!-- Stats row -->
+        <div class="flex gap-8 mt-14 animate-fade-up opacity-0" style="animation-delay:0.65s; animation-fill-mode:forwards;">
+          <div>
+            <div class="font-display font-800 text-3xl text-bright counter-num" data-count="3">0</div>
+            <div class="text-muted text-xs mt-1">Projects Shipped</div>
+          </div>
+          <div class="w-px bg-border"></div>
+          <div>
+            <div class="font-display font-800 text-3xl text-bright counter-num" data-count="5">0</div>
+            <div class="text-muted text-xs mt-1">Core Skills</div>
+          </div>
+          <div class="w-px bg-border"></div>
+          <div>
+            <div class="font-display font-800 text-3xl text-bright">∞</div>
+            <div class="text-muted text-xs mt-1">Curiosity</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: Floating card -->
+      <div class="hidden lg:flex justify-center items-center animate-float">
+        <div class="relative">
+          <!-- Card -->
+          <div class="glass-card rounded-2xl p-8 w-[340px]">
+            <!-- Top bar -->
+            <div class="flex items-center gap-2 mb-6">
+              <div class="w-3 h-3 rounded-full bg-rose/70"></div>
+              <div class="w-3 h-3 rounded-full bg-accent/40"></div>
+              <div class="w-3 h-3 rounded-full bg-emerald/50"></div>
+              <div class="ml-auto text-muted text-xs font-mono">mehul.dev</div>
+            </div>
+
+            <!-- Code lines -->
+            <div class="font-mono text-xs space-y-2">
+              <div class="text-muted"><span class="text-accent">def</span> <span class="text-bright">build_solution</span>(problem):</div>
+              <div class="text-muted pl-4">understand_business_context()</div>
+              <div class="text-muted pl-4">design_clean_architecture()</div>
+              <div class="text-muted pl-4">ship_scalable_code()</div>
+              <div class="text-muted pl-4"><span class="text-accent">return</span> <span class="text-emerald">happy_client</span></div>
+              <div class="mt-4 flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-emerald animate-pulse"></span>
+                <span class="text-emerald text-xs">All systems go</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Floating tags -->
+          <div class="absolute -top-4 -right-6 skill-badge text-xs px-3 py-1.5 rounded-full font-display font-600 text-accent">Django 🐍</div>
+          <div class="absolute -bottom-4 -left-6 skill-badge text-xs px-3 py-1.5 rounded-full font-display font-600 text-emerald">AI APIs 🤖</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom fade -->
+    <div class="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-ink to-transparent"></div>
+  </section>
+
+
+  <!-- ═══════════════════════════════════════
+       ABOUT / SKILLS
+  ════════════════════════════════════════ -->
+  <section id="about" class="relative py-24 sm:py-32 overflow-hidden">
+
+    <div class="glow-blob w-[500px] h-[500px] bg-emerald/5 top-[-100px] left-[-200px]"></div>
+
+    <div class="max-w-6xl mx-auto px-5 sm:px-8">
+
+      <!-- Section header -->
+      <div class="reveal mb-16">
+        <div class="section-line mb-4"></div>
+        <h2 class="font-display font-800 text-3xl sm:text-4xl text-bright">About Me</h2>
+      </div>
+
+      <div class="grid lg:grid-cols-2 gap-16 items-start">
+
+        <!-- Narrative -->
+        <div class="space-y-6">
+          <p class="reveal text-text text-base sm:text-lg leading-relaxed">
+            Most developers see a feature request. I see the <span class="text-bright font-500">business problem hiding behind it</span>. That's because before I wrote a single line of production code, I spent years in operations and HR management — understanding how teams work, where workflows break, and what leaders actually need to make decisions.
+          </p>
+          <p class="reveal reveal-delay-1 text-subtle text-base leading-relaxed">
+            I bridge that gap. When you work with me, you get a developer who asks <em class="text-text not-italic">"what outcome does this create?"</em> before opening a text editor. The result is software that fits your business like a glove — not a generic tool awkwardly repurposed.
+          </p>
+          <p class="reveal reveal-delay-2 text-subtle text-base leading-relaxed">
+            My stack spans Python/Django for robust backends, modern frontend frameworks for clean interfaces, mobile app development for cross-platform reach, and AI integration for products that feel genuinely intelligent. I handle everything from initial flowchart to final deployment.
+          </p>
+
+          <!-- Quote block -->
+          <div class="reveal reveal-delay-3 mt-8 border-l-2 border-accent pl-6 py-2">
+            <p class="text-text italic text-base">"I don't just write code — I build solutions that streamline the way your business actually operates."</p>
+            <p class="text-muted text-sm mt-2 font-display">— Mehul</p>
+          </div>
+        </div>
+
+        <!-- Skills -->
+        <div class="space-y-8">
+          <!-- Core skill badges -->
+          <div class="reveal">
+            <p class="text-muted text-xs uppercase tracking-widest font-display font-600 mb-4">Core Capabilities</p>
+            <div class="flex flex-wrap gap-2">
+              <span class="skill-badge text-accent text-xs font-display font-600 px-3.5 py-2 rounded-full">Web Development</span>
+              <span class="skill-badge text-accent text-xs font-display font-600 px-3.5 py-2 rounded-full">Mobile App Dev</span>
+              <span class="skill-badge text-accent text-xs font-display font-600 px-3.5 py-2 rounded-full">UI/UX Design</span>
+              <span class="skill-badge text-accent text-xs font-display font-600 px-3.5 py-2 rounded-full">Graphic Design</span>
+              <span class="skill-badge text-accent text-xs font-display font-600 px-3.5 py-2 rounded-full">AI Integration</span>
+              <span class="skill-badge text-accent text-xs font-display font-600 px-3.5 py-2 rounded-full">Prompt Engineering</span>
+            </div>
+          </div>
+
+          <!-- Tech stack bars -->
+          <div class="reveal reveal-delay-1 space-y-5">
+            <p class="text-muted text-xs uppercase tracking-widest font-display font-600 mb-4">Tech Stack</p>
+
+            <div class="skill-item">
+              <div class="flex justify-between text-sm mb-2">
+                <span class="text-text font-display font-600">Python & Django</span>
+                <span class="text-accent text-xs">Expert</span>
+              </div>
+              <div class="h-1.5 bg-border rounded-full overflow-hidden">
+                <div class="skill-bar-fill h-full" data-width="92"></div>
+              </div>
+            </div>
+
+            <div class="skill-item">
+              <div class="flex justify-between text-sm mb-2">
+                <span class="text-text font-display font-600">Frontend Development</span>
+                <span class="text-accent text-xs">Advanced</span>
+              </div>
+              <div class="h-1.5 bg-border rounded-full overflow-hidden">
+                <div class="skill-bar-fill h-full" data-width="85"></div>
+              </div>
+            </div>
+
+            <div class="skill-item">
+              <div class="flex justify-between text-sm mb-2">
+                <span class="text-text font-display font-600">AI APIs & Integration</span>
+                <span class="text-accent text-xs">Advanced</span>
+              </div>
+              <div class="h-1.5 bg-border rounded-full overflow-hidden">
+                <div class="skill-bar-fill h-full" data-width="88"></div>
+              </div>
+            </div>
+
+            <div class="skill-item">
+              <div class="flex justify-between text-sm mb-2">
+                <span class="text-text font-display font-600">Mobile App Frameworks</span>
+                <span class="text-accent text-xs">Proficient</span>
+              </div>
+              <div class="h-1.5 bg-border rounded-full overflow-hidden">
+                <div class="skill-bar-fill h-full" data-width="75"></div>
+              </div>
+            </div>
+
+            <div class="skill-item">
+              <div class="flex justify-between text-sm mb-2">
+                <span class="text-text font-display font-600">UI/UX & Graphic Design</span>
+                <span class="text-accent text-xs">Advanced</span>
+              </div>
+              <div class="h-1.5 bg-border rounded-full overflow-hidden">
+                <div class="skill-bar-fill h-full" data-width="82"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ═══════════════════════════════════════
+       PROJECTS / CASE STUDIES
+  ════════════════════════════════════════ -->
+  <section id="projects" class="relative py-24 sm:py-32 overflow-hidden">
+
+    <div class="glow-blob w-[600px] h-[600px] bg-accent/5 bottom-0 right-[-200px]"></div>
+
+    <div class="max-w-6xl mx-auto px-5 sm:px-8">
+
+      <!-- Header -->
+      <div class="reveal mb-4">
+        <div class="section-line mb-4"></div>
+        <h2 class="font-display font-800 text-3xl sm:text-4xl text-bright">Selected Work</h2>
+      </div>
+      <p class="reveal reveal-delay-1 text-subtle text-base max-w-xl mb-16">
+        Real products built to solve real problems. Each project starts with understanding the business context, then engineering the cleanest possible solution.
+      </p>
+
+      <!-- Project grid -->
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+        <!-- Project 1: CRM -->
+        <div class="reveal glass-card rounded-2xl p-7 flex flex-col group">
+          <!-- Number -->
+          <div class="flex items-center justify-between mb-6">
+            <span class="font-display font-800 text-5xl text-border group-hover:text-accent/20 transition-colors duration-500">01</span>
+            <div class="w-10 h-10 rounded-xl bg-accent/10 border border-accent/20 flex items-center justify-center text-lg">🗂️</div>
+          </div>
+
+          <!-- Title -->
+          <h3 class="font-display font-700 text-xl text-bright mb-3 leading-snug">Custom Business CRM</h3>
+
+          <!-- Tags -->
+          <div class="flex flex-wrap gap-2 mb-4">
+            <span class="tech-tag text-xs px-2.5 py-1 rounded-full">Django</span>
+            <span class="tech-tag text-xs px-2.5 py-1 rounded-full">Python</span>
+            <span class="tech-tag text-xs px-2.5 py-1 rounded-full">PostgreSQL</span>
+          </div>
+
+          <!-- Problem -->
+          <div class="mb-4">
+            <p class="text-muted text-xs uppercase tracking-widest font-600 mb-1.5">The Problem</p>
+            <p class="text-subtle text-sm leading-relaxed">A business consultancy was juggling client data across spreadsheets, email threads, and sticky notes. Nothing talked to anything else.</p>
+          </div>
+
+          <!-- Solution -->
+          <div class="mb-4">
+            <p class="text-muted text-xs uppercase tracking-widest font-600 mb-1.5">The Solution</p>
+            <p class="text-subtle text-sm leading-relaxed">A comprehensive, fully bespoke CRM tailored to their exact consultancy workflows — client pipelines, document management, and team task assignment in one unified system.</p>
+          </div>
+
+          <!-- Impact -->
+          <div class="mt-auto pt-5 border-t border-border">
+            <p class="text-muted text-xs uppercase tracking-widest font-600 mb-1.5">Impact</p>
+            <p class="text-accent text-sm font-500">Eliminated operational silos and centralized client management — saving hours of manual admin weekly.</p>
+          </div>
+        </div>
+
+        <!-- Project 2: AI Resume Builder -->
+        <div class="reveal reveal-delay-1 glass-card rounded-2xl p-7 flex flex-col group">
+          <div class="flex items-center justify-between mb-6">
+            <span class="font-display font-800 text-5xl text-border group-hover:text-accent/20 transition-colors duration-500">02</span>
+            <div class="w-10 h-10 rounded-xl bg-emerald/10 border border-emerald/20 flex items-center justify-center text-lg">🤖</div>
+          </div>
+
+          <h3 class="font-display font-700 text-xl text-bright mb-3 leading-snug">AI Resume Builder</h3>
+
+          <div class="flex flex-wrap gap-2 mb-4">
+            <span class="tech-tag text-xs px-2.5 py-1 rounded-full">AI API</span>
+            <span class="tech-tag text-xs px-2.5 py-1 rounded-full">Web Dev</span>
+            <span class="tech-tag text-xs px-2.5 py-1 rounded-full">Prompt Eng.</span>
+          </div>
+
+          <div class="mb-4">
+            <p class="text-muted text-xs uppercase tracking-widest font-600 mb-1.5">The Problem</p>
+            <p class="text-subtle text-sm leading-relaxed">Job seekers spend hours crafting resumes that still fail to pass ATS filters or impress hiring managers. The process is tedious and the results are generic.</p>
+          </div>
+
+          <div class="mb-4">
+            <p class="text-muted text-xs uppercase tracking-widest font-600 mb-1.5">The Solution</p>
+            <p class="text-subtle text-sm leading-relaxed">An intelligent web application powered by AI that analyses a user's experience, optimises for the target role, and generates a polished, ATS-ready resume in seconds.</p>
+          </div>
+
+          <div class="mt-auto pt-5 border-t border-border">
+            <p class="text-muted text-xs uppercase tracking-widest font-600 mb-1.5">Impact</p>
+            <p class="text-emerald text-sm font-500">Demonstrates seamless AI integration into a user-facing product with genuine, tangible value for every user.</p>
+          </div>
+        </div>
+
+        <!-- Project 3: Project Roots -->
+        <div class="reveal reveal-delay-2 glass-card rounded-2xl p-7 flex flex-col group md:col-span-2 lg:col-span-1">
+          <div class="flex items-center justify-between mb-6">
+            <span class="font-display font-800 text-5xl text-border group-hover:text-accent/20 transition-colors duration-500">03</span>
+            <div class="w-10 h-10 rounded-xl bg-rose/10 border border-rose/20 flex items-center justify-center text-lg">🌱</div>
+          </div>
+
+          <h3 class="font-display font-700 text-xl text-bright mb-3 leading-snug">Project Roots <span class="text-muted text-sm font-body font-400">(In Development)</span></h3>
+
+          <div class="flex flex-wrap gap-2 mb-4">
+            <span class="tech-tag text-xs px-2.5 py-1 rounded-full">Mobile App</span>
+            <span class="tech-tag text-xs px-2.5 py-1 rounded-full">UI/UX Design</span>
+            <span class="tech-tag text-xs px-2.5 py-1 rounded-full">Full-Stack</span>
+          </div>
+
+          <div class="mb-4">
+            <p class="text-muted text-xs uppercase tracking-widest font-600 mb-1.5">The Challenge</p>
+            <p class="text-subtle text-sm leading-relaxed">Building a mobile product from zero — no pre-existing codebase, no template. A genuine ground-up build that demands mastery of every layer of the stack.</p>
+          </div>
+
+          <div class="mb-4">
+            <p class="text-muted text-xs uppercase tracking-widest font-600 mb-1.5">The Approach</p>
+            <p class="text-subtle text-sm leading-relaxed">Engineered end-to-end: from initial concept and flowchart architecture, through UI/UX wireframing and high-fidelity design, to full technical implementation on cross-platform mobile frameworks.</p>
+          </div>
+
+          <div class="mt-auto pt-5 border-t border-border">
+            <p class="text-muted text-xs uppercase tracking-widest font-600 mb-1.5">Significance</p>
+            <p class="text-rose text-sm font-500">Proof of end-to-end product ownership — I can take an idea from napkin sketch to App Store.</p>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- CTA under projects -->
+      <div class="reveal mt-14 text-center">
+        <p class="text-subtle mb-5 text-sm">Have a project in mind? Let's talk about it.</p>
+        <a href="mailto:hello@mehul.dev" class="btn-primary px-8 py-3.5 rounded-full text-sm inline-block">Start a Conversation →</a>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ═══════════════════════════════════════
+       WHY WORK WITH ME (mini-section)
+  ════════════════════════════════════════ -->
+  <section class="py-20 sm:py-28 relative overflow-hidden">
+    <div class="max-w-6xl mx-auto px-5 sm:px-8">
+
+      <div class="reveal glass-card rounded-2xl p-10 sm:p-14 relative overflow-hidden">
+        <!-- Background accent -->
+        <div class="absolute top-0 right-0 w-64 h-64 bg-accent/5 rounded-full blur-3xl"></div>
+        <div class="absolute bottom-0 left-0 w-48 h-48 bg-emerald/5 rounded-full blur-3xl"></div>
+
+        <div class="relative z-10 grid sm:grid-cols-3 gap-10">
+          <div>
+            <div class="text-3xl mb-3">🧠</div>
+            <h3 class="font-display font-700 text-bright text-lg mb-2">Business-First Thinking</h3>
+            <p class="text-subtle text-sm leading-relaxed">Every technical decision is grounded in business outcomes. I ask why before I ask how.</p>
+          </div>
+          <div>
+            <div class="text-3xl mb-3">⚡</div>
+            <h3 class="font-display font-700 text-bright text-lg mb-2">Full Ownership</h3>
+            <p class="text-subtle text-sm leading-relaxed">From architecture to deployment, I own the whole product lifecycle. No handoff gaps, no accountability black holes.</p>
+          </div>
+          <div>
+            <div class="text-3xl mb-3">🔮</div>
+            <h3 class="font-display font-700 text-bright text-lg mb-2">AI-Native Approach</h3>
+            <p class="text-subtle text-sm leading-relaxed">I integrate AI where it genuinely adds leverage — not as a gimmick, but as a competitive advantage baked into the product.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ═══════════════════════════════════════
+       CONTACT / FOOTER
+  ════════════════════════════════════════ -->
+  <section id="contact" class="relative py-28 sm:py-36 overflow-hidden">
+
+    <div class="glow-blob w-[700px] h-[700px] bg-accent/6 top-[-200px] left-1/2 -translate-x-1/2"></div>
+
+    <div class="max-w-3xl mx-auto px-5 sm:px-8 text-center relative z-10">
+      <div class="reveal">
+        <div class="section-line mb-6 mx-auto"></div>
+        <p class="text-muted text-xs uppercase tracking-widest font-display font-600 mb-4">Ready to Collaborate</p>
+        <h2 class="font-display font-800 text-4xl sm:text-5xl lg:text-6xl text-bright leading-[1.1] tracking-tight mb-6">
+          Let's build something<br />
+          <span class="gradient-text">great together.</span>
+        </h2>
+        <p class="text-subtle text-base sm:text-lg leading-relaxed max-w-xl mx-auto mb-12">
+          Whether you have a fully-formed brief or just a rough idea, I'd love to hear about what you're trying to build. Drop me a message and let's explore what's possible.
+        </p>
+      </div>
+
+      <!-- CTA -->
+      <div class="reveal reveal-delay-1 flex flex-col sm:flex-row gap-4 justify-center mb-16">
+        <a href="mailto:hello@mehul.dev" class="btn-primary px-9 py-4 rounded-full text-base inline-block">
+          Email Me Directly ↗
+        </a>
+        <a href="#projects" class="btn-ghost px-9 py-4 rounded-full text-base inline-block">
+          See My Work
+        </a>
+      </div>
+
+      <!-- Social links -->
+      <div class="reveal reveal-delay-2 flex items-center justify-center gap-4">
+        <!-- LinkedIn -->
+        <a href="#" aria-label="LinkedIn" class="social-icon w-12 h-12 rounded-xl flex items-center justify-center">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" class="text-subtle">
+            <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/>
+            <rect x="2" y="9" width="4" height="12"/>
+            <circle cx="4" cy="4" r="2"/>
+          </svg>
+        </a>
+
+        <!-- GitHub -->
+        <a href="#" aria-label="GitHub" class="social-icon w-12 h-12 rounded-xl flex items-center justify-center">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" class="text-subtle">
+            <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
+          </svg>
+        </a>
+
+        <!-- Twitter / X -->
+        <a href="#" aria-label="Twitter / X" class="social-icon w-12 h-12 rounded-xl flex items-center justify-center">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" class="text-subtle">
+            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ═══════════════════════════════════════
+       FOOTER BAR
+  ════════════════════════════════════════ -->
+  <footer class="border-t border-border py-8">
+    <div class="max-w-6xl mx-auto px-5 sm:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <span class="font-display font-700 text-bright">
+        M<span class="gradient-text">ehul</span>
+      </span>
+      <p class="text-muted text-xs">© 2026 Mehul. All rights reserved.</p>
+      <p class="text-muted text-xs">Built with precision & purpose.</p>
+    </div>
+  </footer>
+
+
+  <!-- ═══════════════════════════════════════
+       SCRIPTS
+  ════════════════════════════════════════ -->
+  <script>
+    // ── Mobile nav toggle ──
+    const toggle = document.getElementById('menu-toggle');
+    const menu = document.getElementById('mobile-menu');
+    const bar1 = document.getElementById('bar1');
+    const bar2 = document.getElementById('bar2');
+    const bar3 = document.getElementById('bar3');
+    let menuOpen = false;
+
+    toggle.addEventListener('click', () => {
+      menuOpen = !menuOpen;
+      if (menuOpen) {
+        menu.classList.remove('hidden');
+        menu.classList.add('open');
+        bar1.style.transform = 'rotate(45deg) translate(5px, 5px)';
+        bar2.style.opacity = '0';
+        bar3.style.transform = 'rotate(-45deg) translate(5px, -5px)';
+        bar3.style.width = '24px';
+      } else { closeMobile(); }
+    });
+
+    function closeMobile() {
+      menuOpen = false;
+      menu.classList.add('hidden');
+      menu.classList.remove('open');
+      bar1.style.transform = '';
+      bar2.style.opacity = '';
+      bar3.style.transform = '';
+      bar3.style.width = '';
+    }
+
+    // ── Scroll reveal ──
+    const revealEls = document.querySelectorAll('.reveal');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('visible');
+          observer.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.12 });
+    revealEls.forEach(el => observer.observe(el));
+
+    // ── Skill bar animation ──
+    const barObserver = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          const bar = e.target.querySelector('.skill-bar-fill');
+          if (bar) {
+            const w = bar.getAttribute('data-width');
+            setTimeout(() => { bar.style.width = w + '%'; }, 200);
+          }
+          barObserver.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.4 });
+    document.querySelectorAll('.skill-item').forEach(el => barObserver.observe(el));
+
+    // ── Counter animation ──
+    function animateCounter(el) {
+      const target = parseInt(el.getAttribute('data-count'));
+      let start = 0;
+      const duration = 1400;
+      const step = (timestamp) => {
+        if (!start) start = timestamp;
+        const progress = Math.min((timestamp - start) / duration, 1);
+        el.textContent = Math.floor(progress * target);
+        if (progress < 1) requestAnimationFrame(step);
+        else el.textContent = target + '+';
+      };
+      requestAnimationFrame(step);
+    }
+    const counterObserver = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          animateCounter(e.target);
+          counterObserver.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.5 });
+    document.querySelectorAll('[data-count]').forEach(el => counterObserver.observe(el));
+
+    // ── Smooth scroll for anchor links ──
+    document.querySelectorAll('a[href^="#"]').forEach(a => {
+      a.addEventListener('click', (e) => {
+        const id = a.getAttribute('href');
+        if (id === '#') return;
+        const target = document.querySelector(id);
+        if (target) {
+          e.preventDefault();
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      });
+    });
+
+    // ── Nav highlight on scroll ──
+    const sections = ['hero', 'about', 'projects', 'contact'];
+    const navLinks = document.querySelectorAll('nav a[href^="#"]');
+    window.addEventListener('scroll', () => {
+      let current = '';
+      sections.forEach(id => {
+        const el = document.getElementById(id);
+        if (el && window.scrollY >= el.offsetTop - 100) current = id;
+      });
+      navLinks.forEach(link => {
+        link.classList.remove('text-bright');
+        if (link.getAttribute('href') === '#' + current) link.classList.add('text-bright');
+      });
+    }, { passive: true });
+  </script>
+</body>
+</html>
